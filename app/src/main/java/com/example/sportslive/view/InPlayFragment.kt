@@ -1,10 +1,8 @@
 package com.example.sportslive.view
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -28,10 +26,6 @@ import com.example.sportslive.utils.AppConstants
 import com.example.sportslive.utils.NetworkUtils
 import com.example.sportslive.viewmodel.MainViewModel
 import com.example.sportslive.viewmodel.MainViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -75,6 +69,13 @@ class InPlayFragment : Fragment() {
             //Api Calling
             liveSportsService = RetrofitHelper.getInstance().create(LiveSportsService::class.java)
             sportRepository = SportsRepository(liveSportsService)
+            mainViewModel = ViewModelProvider(
+                this,
+                MainViewModelFactory(sportRepository)
+            ).get(MainViewModel::class.java)
+            mainViewModel.sportsData.observe(requireActivity(), Observer {
+                setUpUI(it)
+            })
         } else {
             //Showing Alert Dialog for no network
             val alertDialog = AlertDialog.Builder(requireActivity())
@@ -84,20 +85,13 @@ class InPlayFragment : Fragment() {
                 .show()
         }
 
-        mainViewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(sportRepository)
-        ).get(MainViewModel::class.java)
-        mainViewModel.sportsData.observe(requireActivity(), Observer {
-            setUpUI(it)
-        })
     }
 
     private fun setUpUI(sportsData : SportsData){
         sportsData?.let {
             // Filtering Data and Storing Response in Data Class
             sportsData.data.forEach { e ->
-                if(getDateCompareResult(e.openDate)>0){
+                if(getDateCompareResult(e.openDate)){
                     var dateText = StringBuffer().append(AppConstants.DATA_TEXT).append(e.openDate)
                     when(e.sportId){
                         AppConstants.CRICKET_ID -> cricketDataList.add(CricketData(e.eventId.toInt(),e.eventName,dateText.toString()))
@@ -119,11 +113,31 @@ class InPlayFragment : Fragment() {
     }
 
     //Comparing Dates
-    private fun getDateCompareResult(openDate: String): Int {
-        val currentTime: Date = Calendar.getInstance().getTime()
-        val inputFormat = SimpleDateFormat(AppConstants.DATE_FORMAT)
-        val eventData: Date? = inputFormat.parse(openDate)
-        return currentTime.compareTo(eventData)
+    private fun getDateCompareResult(openDate: String): Boolean {
+        var inputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_API)
+        var inputFormat2 = SimpleDateFormat(AppConstants.DATE_FORMAT_DEFAULT)
+        var outputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_REQUIRED)
+        var outputFormat2 = SimpleDateFormat(AppConstants.DATE_FORMAT_REQUIRED2)
+
+        var eventDate: Date?  = inputFormat1.parse(openDate)
+        var currentTime: Date = inputFormat2.parse(Calendar.getInstance().getTime().toString())
+
+        var eventDateString = outputFormat1.format(eventDate)
+        var currentTimeString = outputFormat1.format(currentTime)
+
+        currentTime = outputFormat1.parse(eventDateString)!!
+        eventDate = outputFormat1.parse(currentTimeString)
+        val isToday = currentTime==eventDate
+
+        eventDateString = outputFormat2.format(eventDate)
+        currentTimeString = outputFormat2.format(currentTime)
+
+        currentTime = outputFormat2.parse(eventDateString)!!
+        eventDate = outputFormat2.parse(currentTimeString)
+
+        val isCurrentGreater = currentTime > eventDate
+
+        return (isToday && isCurrentGreater)
     }
 
 }

@@ -24,6 +24,9 @@ import com.example.sportslive.model.SportsData
 import com.example.sportslive.model.TennisData
 import com.example.sportslive.repository.SportsRepository
 import com.example.sportslive.utils.AppConstants
+import com.example.sportslive.utils.AppConstants.DATE_FORMAT_API
+import com.example.sportslive.utils.AppConstants.DATE_FORMAT_DEFAULT
+import com.example.sportslive.utils.AppConstants.DATE_FORMAT_REQUIRED
 import com.example.sportslive.utils.NetworkUtils
 import com.example.sportslive.viewmodel.MainViewModel
 import com.example.sportslive.viewmodel.MainViewModelFactory
@@ -70,6 +73,14 @@ class TodayFragment : Fragment() {
             //Api Calling
             liveSportsService = RetrofitHelper.getInstance().create(LiveSportsService::class.java)
             sportRepository = SportsRepository(liveSportsService)
+
+            mainViewModel = ViewModelProvider(
+                this,
+                MainViewModelFactory(sportRepository)
+            ).get(MainViewModel::class.java)
+            mainViewModel.sportsData.observe(requireActivity(), Observer {
+                setUpUI(it)
+            })
         } else {
             //Showing Alert Dialog for no network
             val alertDialog = AlertDialog.Builder(requireActivity())
@@ -79,20 +90,13 @@ class TodayFragment : Fragment() {
                 .show()
         }
 
-        mainViewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(sportRepository)
-        ).get(MainViewModel::class.java)
-        mainViewModel.sportsData.observe(requireActivity(), Observer {
-            setUpUI(it)
-        })
     }
 
     private fun setUpUI(sportsData: SportsData) {
         sportsData?.let {
             // Filtering Data and Storing Response in Data Class
             sportsData.data.forEach { e ->
-                if (getDateCompareResult(e.openDate) > 0) {
+                if (getDateCompareResult(e.openDate) == 0) {
                     var dateText = StringBuffer().append(AppConstants.DATA_TEXT).append(e.openDate)
                     when (e.sportId) {
                         AppConstants.CRICKET_ID -> cricketDataList.add(
@@ -134,9 +138,19 @@ class TodayFragment : Fragment() {
 
     //Comparing Dates
     private fun getDateCompareResult(openDate: String): Int {
-        val currentTime: Date = Calendar.getInstance().getTime()
-        val inputFormat = SimpleDateFormat(AppConstants.DATE_FORMAT)
-        val eventData: Date? = inputFormat.parse(openDate)
-        return currentTime.compareTo(eventData)
+        val inputFormat1 = SimpleDateFormat(DATE_FORMAT_API)
+        val inputFormat2 = SimpleDateFormat(DATE_FORMAT_DEFAULT)
+        val outputFormat = SimpleDateFormat(DATE_FORMAT_REQUIRED)
+
+        var eventDate: Date? = inputFormat1.parse(openDate)
+        var currentTime: Date? = inputFormat2.parse(Calendar.getInstance().getTime().toString())
+
+        val eventDateString = outputFormat.format(eventDate)
+        val currentTimeString = outputFormat.format(currentTime)
+
+        currentTime = outputFormat.parse(eventDateString)!!
+        eventDate = outputFormat.parse(currentTimeString)
+
+        return currentTime.compareTo(eventDate)
     }
 }
