@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SportsLive</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sports_live">Sports Live</string>
+    <string name="time">Time</string>
+    <string name="tennis">Tennis</string>
+    <string name="soccer">Soccer</string>
+    <string name="cricket">Cricket</string>
+    <string name="in_play">IN PLAY</string>
+    <string name="today">TODAY</string>
+    <string name="tomorrow">TOMORROW</string>
+    <string name="event_name">Event Name</string>
+    <string name="loading">Loading...</string>
+</resources>
