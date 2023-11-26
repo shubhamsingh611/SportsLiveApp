@@ -12,4 +12,5 @@
     <string name="tomorrow">TOMORROW</string>
     <string name="event_name">Event Name</string>
     <string name="loading">Loading...</string>
+    <string name="no_event_found">No Event Found</string>
 </resources>

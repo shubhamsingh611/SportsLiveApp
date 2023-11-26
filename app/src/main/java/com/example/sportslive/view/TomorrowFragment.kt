@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -61,9 +62,12 @@ class TomorrowFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cricketDataAdapter = binding.rvCricket
-        soccerDataAdapter = binding.rvSoccer
-        tennisDataAdapter = binding.rvTennis
+        cricketDataAdapter = binding.cricketLayout.findViewById(R.id.rv_sports)
+        soccerDataAdapter = binding.soccerLayout.findViewById(R.id.rv_sports)
+        tennisDataAdapter = binding.tennisLayout.findViewById(R.id.rv_sports)
+        binding.cricketLayout.findViewById<TextView>(R.id.tv_sports).text = AppConstants.CRICKET_TEXT
+        binding.soccerLayout.findViewById<TextView>(R.id.tv_sports).text = AppConstants.SOCCER_TEXT
+        binding.tennisLayout.findViewById<TextView>(R.id.tv_sports).text = AppConstants.TENNIS_TEXT
 
         //Checking Internet connection
         if (NetworkUtils.isInternetAvailable(requireActivity())) {
@@ -131,6 +135,16 @@ class TomorrowFragment : Fragment() {
 
             tennisDataAdapter.adapter = TennisDataAdapter(tennisDataList)
             tennisDataAdapter.layoutManager = LinearLayoutManager(activity)
+        }
+
+        if(cricketDataList.isNotEmpty()){
+            binding.cricketLayout.findViewById<TextView>(R.id.tv_no_event).visibility = View.GONE
+        }
+        if(soccerDataList.isNotEmpty()) {
+            binding.soccerLayout.findViewById<TextView>(R.id.tv_no_event).visibility = View.GONE
+        }
+        if(tennisDataList.isNotEmpty()) {
+            binding.tennisLayout.findViewById<TextView>(R.id.tv_no_event).visibility = View.GONE
         }
     }
 

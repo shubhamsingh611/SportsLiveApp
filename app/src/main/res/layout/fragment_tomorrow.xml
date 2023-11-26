@@ -5,84 +5,39 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.TomorrowFragment">
+        tools:context=".view.TomorrowFragment"
+        android:background="@color/ViewBackground">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/tv_cricket"
+            <include
+                android:id="@+id/cricket_layout"
+                layout="@layout/event_adapter_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/cricket"
-                android:padding="@dimen/dimen_10dp"
-                android:background="@color/PrimaryColor"
-                android:elevation="@dimen/dimen_5dp"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="@dimen/dimen_16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_cricket"
+            <include
+                android:id="@+id/soccer_layout"
+                layout="@layout/event_adapter_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_cricket" />
+                app:layout_constraintTop_toBottomOf="@id/cricket_layout" />
 
-            <TextView
-                android:id="@+id/tv_soccer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/soccer"
-                android:padding="@dimen/dimen_10dp"
-                android:background="@color/PrimaryColor"
-                android:elevation="@dimen/dimen_5dp"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="@dimen/dimen_16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rv_cricket" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_soccer"
+            <include
+                android:id="@+id/tennis_layout"
+                layout="@layout/event_adapter_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_soccer" />
-
-            <TextView
-                android:id="@+id/tv_tennis"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tennis"
-                android:padding="@dimen/dimen_10dp"
-                android:background="@color/PrimaryColor"
-                android:elevation="@dimen/dimen_5dp"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="@dimen/dimen_16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rv_soccer" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_tennis"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/dimen_50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_tennis" />
+                app:layout_constraintTop_toBottomOf="@id/soccer_layout" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
