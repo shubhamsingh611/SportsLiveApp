@@ -100,7 +100,7 @@ class TodayFragment : Fragment() {
         sportsData?.let {
             // Filtering Data and Storing Response in Data Class
             sportsData.data.forEach { e ->
-                if (getDateCompareResult(e.openDate) == 0) {
+                if (isToday(e.openDate) && !isInPlay(e.openDate)) {
                     var dateText = StringBuffer().append(AppConstants.DATA_TEXT).append(e.openDate)
                     when (e.sportId) {
                         AppConstants.CRICKET_ID -> cricketDataList.add(
@@ -150,20 +150,25 @@ class TodayFragment : Fragment() {
     }
 
     //Comparing Dates
-    private fun getDateCompareResult(openDate: String): Int {
-        val inputFormat1 = SimpleDateFormat(DATE_FORMAT_API)
-        val inputFormat2 = SimpleDateFormat(DATE_FORMAT_DEFAULT)
-        val outputFormat = SimpleDateFormat(DATE_FORMAT_REQUIRED)
+    private fun isToday(openDate: String): Boolean {
+        val inputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_API)
+        val inputFormat2 = SimpleDateFormat(AppConstants.DATE_FORMAT_DEFAULT)
+        val outputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_REQUIRED)
 
         var eventDate: Date? = inputFormat1.parse(openDate)
-        var currentTime: Date? = inputFormat2.parse(Calendar.getInstance().getTime().toString())
+        var currentTime: Date? = inputFormat2.parse(Calendar.getInstance().time.toString())
 
-        val eventDateString = outputFormat.format(eventDate)
-        val currentTimeString = outputFormat.format(currentTime)
+        val eventDateString = eventDate?.let { outputFormat1.format(it) }
+        val currentTimeString = currentTime?.let { outputFormat1.format(it) }
+        currentTime = eventDateString?.let { outputFormat1.parse(it) }!!
+        eventDate = currentTimeString?.let { outputFormat1.parse(it) }
+        return currentTime == eventDate
+    }
 
-        currentTime = outputFormat.parse(eventDateString)!!
-        eventDate = outputFormat.parse(currentTimeString)
-
-        return currentTime.compareTo(eventDate)
+    private fun isInPlay(openDate: String): Boolean {
+        val inputFormat1 = SimpleDateFormat(DATE_FORMAT_API)
+        val eventDate: Date? = inputFormat1.parse(openDate)
+        val currentTime: Date = Calendar.getInstance().time
+        return currentTime > eventDate
     }
 }

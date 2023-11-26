@@ -95,7 +95,7 @@ class InPlayFragment : Fragment() {
         sportsData?.let {
             // Filtering Data and Storing Response in Data Class
             sportsData.data.forEach { e ->
-                if(getDateCompareResult(e.openDate)){
+                if(isToday(e.openDate) && isInPlay(e.openDate)){
                     var dateText = StringBuffer().append(AppConstants.DATA_TEXT).append(e.openDate)
                     when(e.sportId){
                         AppConstants.CRICKET_ID -> cricketDataList.add(CricketData(e.eventId.toInt(),e.eventName,dateText.toString()))
@@ -125,31 +125,26 @@ class InPlayFragment : Fragment() {
     }
 
     //Comparing Dates
-    private fun getDateCompareResult(openDate: String): Boolean {
+    private fun isToday(openDate: String): Boolean {
         var inputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_API)
         var inputFormat2 = SimpleDateFormat(AppConstants.DATE_FORMAT_DEFAULT)
         var outputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_REQUIRED)
-        var outputFormat2 = SimpleDateFormat(AppConstants.DATE_FORMAT_REQUIRED2)
 
-        var eventDate: Date?  = inputFormat1.parse(openDate)
-        var currentTime: Date = inputFormat2.parse(Calendar.getInstance().getTime().toString())
+        var eventDate: Date? = inputFormat1.parse(openDate)
+        var currentTime: Date? = inputFormat2.parse(Calendar.getInstance().time.toString())
 
-        var eventDateString = outputFormat1.format(eventDate)
-        var currentTimeString = outputFormat1.format(currentTime)
+        var eventDateString = eventDate?.let { outputFormat1.format(it) }
+        var currentTimeString = currentTime?.let { outputFormat1.format(it) }
+        currentTime = eventDateString?.let { outputFormat1.parse(it) }!!
+        eventDate = currentTimeString?.let { outputFormat1.parse(it) }
+        return currentTime == eventDate
+    }
 
-        currentTime = outputFormat1.parse(eventDateString)!!
-        eventDate = outputFormat1.parse(currentTimeString)
-        val isToday = currentTime==eventDate
-
-        eventDateString = outputFormat2.format(eventDate)
-        currentTimeString = outputFormat2.format(currentTime)
-
-        currentTime = outputFormat2.parse(eventDateString)!!
-        eventDate = outputFormat2.parse(currentTimeString)
-
-        val isCurrentGreater = currentTime > eventDate
-
-        return (isToday && isCurrentGreater)
+    private fun isInPlay(openDate: String): Boolean {
+        var inputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_API)
+        var eventDate: Date? = inputFormat1.parse(openDate)
+        var currentTime: Date = Calendar.getInstance().time
+        return currentTime > eventDate
     }
 
 }

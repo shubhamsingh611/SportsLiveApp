@@ -98,7 +98,7 @@ class TomorrowFragment : Fragment() {
         sportsData?.let {
             // Filtering Data and Storing Response in Data Class
             sportsData.data.forEach { e ->
-                if (getDateCompareResult(e.openDate) > 0) {
+                if (isTomorrow(e.openDate) > 0) {
                     var dateText = StringBuffer().append(AppConstants.DATA_TEXT).append(e.openDate)
                     when (e.sportId) {
                         AppConstants.CRICKET_ID -> cricketDataList.add(
@@ -149,19 +149,19 @@ class TomorrowFragment : Fragment() {
     }
 
     //Comparing Dates
-    private fun getDateCompareResult(openDate: String): Int {
+    private fun isTomorrow(openDate: String): Int {
         val inputFormat1 = SimpleDateFormat(AppConstants.DATE_FORMAT_API)
         val inputFormat2 = SimpleDateFormat(AppConstants.DATE_FORMAT_DEFAULT)
         val outputFormat = SimpleDateFormat(AppConstants.DATE_FORMAT_REQUIRED)
 
         var eventDate: Date? = inputFormat1.parse(openDate)
-        var currentTime: Date? = inputFormat2.parse(Calendar.getInstance().getTime().toString())
+        var currentTime: Date? = inputFormat2.parse(Calendar.getInstance().time.toString())
 
-        val eventDateString = outputFormat.format(eventDate)
-        val currentTimeString = outputFormat.format(currentTime)
+        val eventDateString = eventDate?.let { outputFormat.format(it) }
+        val currentTimeString = currentTime?.let { outputFormat.format(it) }
 
-        currentTime = outputFormat.parse(eventDateString)!!
-        eventDate = outputFormat.parse(currentTimeString)
+        currentTime = eventDateString?.let { outputFormat.parse(it) }!!
+        eventDate = currentTimeString?.let { outputFormat.parse(it) }
 
         return currentTime.compareTo(eventDate)
     }
